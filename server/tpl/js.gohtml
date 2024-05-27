@@ -1,0 +1,117 @@
+{{ define "js" }}
+let socket;
+
+const populateDropDown = (v, id) => {
+    const el = document.getElementById(id);
+    el.innerHTML = "";
+    const frag = new DocumentFragment();
+    for (let i = 0; i < v.length; i++) {
+        const opt = document.createElement("option");
+        optVal = document.createTextNode(v[i]);
+        opt.append(optVal);
+//        opt.setAttribute("value", i);
+        frag.appendChild(opt);
+    }
+    el.appendChild(frag);
+};
+
+const sendMsg = (type, data) => {
+    // Always send the username and token.
+    return socket.send(JSON.stringify({
+        type,
+        data,
+    }));
+};
+
+// This doesn't appear to be reliable on some mobile devices.
+// Can use this for detecting both closing the browser tab
+// and a page refresh.
+/*
+window.addEventListener("beforeunload", function () {
+    sendMsg("guess", "i'm dying");
+    if (WebSocket.OPEN == socket.readyState) {
+        socket.close();
+    }
+});
+*/
+
+document.addEventListener("DOMContentLoaded", event => {
+    const socketURL = `{{ . }}`;
+    socket = new WebSocket(socketURL);
+
+    console.log("initiating websocket at", socketURL);
+
+    document.getElementById("deployment-dates-form").addEventListener("submit", event => {
+        event.preventDefault();
+        sendMsg("deployment-date", document.getElementById("deployment-date").value);
+    });
+
+    document.getElementById("all-services-form").addEventListener("submit", event => {
+        event.preventDefault();
+        const opts = document.getElementById("all-services").selectedOptions;
+        const len = opts.length;
+        if (len) {
+            let indices = [];
+            for (let i = 0; i < len; i++) {
+                indices.push(opts[i].index);
+            }
+            sendMsg("selected-services", indices);
+        }
+    });
+
+    document.getElementById("selected-services-form").addEventListener("submit", event => {
+        event.preventDefault();
+        const opts = document.getElementById("selected-services").options;
+        const len = opts.length;
+        if (len) {
+            let options = [];
+            for (let i = 0; i < len; i++) {
+                options.push(opts[i].value);
+            }
+            sendMsg("create-pr", options);
+        }
+    });
+
+    document.getElementById("all-services").addEventListener("dblclick", event => {
+        sendMsg("add-to-selected-services", event.target.value);
+    });
+
+    document.getElementById("selected-services").addEventListener("dblclick", event => {
+        targOption = event.target;
+        targSelect = event.currentTarget;
+        targSelect.removeChild(targOption);
+        sendMsg("remove-from-selected-services", targOption.value);
+    });
+
+    //socket.addEventListener("close", event => {
+    //});
+
+    socket.addEventListener("message", event => {
+        const d = JSON.parse(event.data);
+
+        switch (d.type) {
+            case "all-services":
+                //populateDropDown(d.data.map(v => v.split(",")[0]), "all-services");
+                populateDropDown(d.data, "all-services");
+                break;
+
+            case "error":
+                break;
+
+            case "production-dates":
+                populateDropDown(d.data, "deployment-date");
+                break;
+
+            case "selected-services":
+                //populateDropDown(d.data.map(v => v.split(",")[0]), "selected-services");
+                populateDropDown(d.data, "selected-services");
+                break;
+
+            default:
+                // TODO?
+                console.log("unknown data type");
+        }
+    });
+});
+{{ end }}
+

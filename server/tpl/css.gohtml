@@ -1,0 +1,50 @@
+{{ define "css" }}
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+}
+#production-deployments {
+    display: flex;
+    height: 100%;
+    position: relative;
+    width: 100%;
+}
+form {
+    border: 1px solid #000;
+    flex: 1;
+    height: 40%;
+    margin: .5%;
+    padding: .5%;
+    width: 20%;
+}
+select {
+    width: 30%;
+}
+select#all-services, select#selected-services {
+    height: 12em;
+}
+li {
+    list-style-type: none;
+    margin: 2% 0;
+}
+.bold {
+    font-weight: bold;
+}
+.correct {
+    color: blue;
+}
+.incorrect {
+    color: red;
+}
+.hide {
+	display: none;
+}
+.show {
+    display: block;
+}
+.transparent {
+    opacity: 0;
+}
+{{ end }}
+

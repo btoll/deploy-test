@@ -1,0 +1,6 @@
+deploy-test
+*.pem
+
+production-deployments
+gitops
+

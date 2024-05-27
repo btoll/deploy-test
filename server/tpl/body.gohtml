@@ -1,0 +1,24 @@
+{{ define "body" }}
+<section id="production-deployments">
+    <form id="deployment-dates-form">
+        <p><label for="deployment-date">Choose the date of deployment:</label></p>
+        <p><select id="deployment-date" name="deployment-date"></select></p>
+        <p><input id="submitDeploymentDate" name="submitDeploymentDate" value="Submit" type="submit"></p>
+    </form>
+    <form id="all-services-form">
+        <div>
+            <p><label for="all-services">Select the services to deploy:</label></p>
+            <p><select id="all-services" name="all-services" multiple></select></p>
+            <p><input id="submitAllServices" name="submitAllServices" value="Select" type="submit"></p>
+        </div>
+    </form>
+    <form id="selected-services-form">
+        <div>
+            <p><label for="selected-services">Create a Pull Request of the selected services:</label></p>
+            <p><select id="selected-services" name="selected-services" multiple></select></p>
+            <p><input id="create-pr" name="create-pr" value="Create Pull Request" type="submit"></p>
+        </div>
+    </form>
+</section>
+{{ end }}
+
